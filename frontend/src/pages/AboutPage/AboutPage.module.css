@@ -1,0 +1,41 @@
+.container {
+  min-height: 100vh;
+  background-color: #fff;
+  padding: 4rem var(--padding-page);
+}
+
+.content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: #111;
+  margin-bottom: 1.5rem;
+}
+
+.intro {
+  font-size: 1.1rem;
+  color: #333;
+  line-height: 1.8;
+  margin-bottom: 3rem;
+  border-left: 3px solid #111;
+  padding-left: 1.5rem;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.subtitle {
+  font-size: 1.3rem;
+  color: #111;
+  margin-bottom: 1rem;
+}
+
+p {
+  color: #444;
+  line-height: 1.8;
+  font-size: 1rem;
+}

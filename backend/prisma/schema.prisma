@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum Rol {
+  ADMIN
+  RESTAURADOR
+}
+
+enum TipoBien {
+  MUEBLE
+  INMUEBLE
+}
+
+enum Estado {
+  EN_CURSO
+  FINALIZADO
+  PENDIENTE
+}
+
+// Models
+model Usuario {
+  id        Int       @id @default(autoincrement())
+  nombre    String    @db.VarChar(100)
+  email     String    @unique @db.VarChar(150)
+  password  String    @db.VarChar(255)
+  rol       Rol       @default(RESTAURADOR)
+  activo    Boolean   @default(true)
+  informes  Informe[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("usuarios")
+}
+
+model Bien {
+  id          Int       @id @default(autoincrement())
+  nombre      String    @db.VarChar(255)
+  tipo        TipoBien
+  ubicacion   String    @db.VarChar(255)
+  descripcion String?
+  imagen      String?
+  fechaIngreso DateTime @default(now())
+  informes    Informe[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("bienes")
+}
+
+model Informe {
+  id             Int                @id @default(autoincrement())
+  titulo         String             @db.VarChar(255)
+  diagnostico    String
+  tratamiento    String
+  procedimientos String
+  estado         Estado             @default(EN_CURSO)
+  fechaInicio    DateTime
+  fechaFin       DateTime?
+  notas          String?
+  bien           Bien               @relation(fields: [bienId], references: [id], onDelete: Cascade)
+  bienId         Int
+  restaurador    Usuario            @relation(fields: [restauradorId], references: [id], onDelete: Cascade)
+  restauradorId  Int
+  materiales     MaterialInforme[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@map("informes")
+}
+
+model MaterialInforme {
+  id         Int       @id @default(autoincrement())
+  nombre     String    @db.VarChar(255)
+  cantidad   String    @db.VarChar(100)
+  proveedor  String?   @db.VarChar(255)
+  informe    Informe   @relation(fields: [informeId], references: [id], onDelete: Cascade)
+  informeId  Int
+  createdAt  DateTime  @default(now())
+
+  @@map("materiales_informe")
+}

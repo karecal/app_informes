@@ -1,0 +1,33 @@
+.main {
+  padding: var(--padding-page);
+  background-color: #111;
+  min-height: 100vh;
+}
+
+.heading {
+  color: #fff;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: var(--grid-columns);
+  gap: 1.5rem;
+}
+
+.noResults {
+  color: #aaa;
+  font-size: 1rem;
+  margin-top: 2rem;
+}
+
+@media (max-width: 600px) {
+  .heading {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+  }
+}

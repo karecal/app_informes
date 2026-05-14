@@ -1,0 +1,108 @@
+.container {
+  min-height: 100vh;
+  background-color: #fff;
+  padding: 4rem var(--padding-page);
+}
+
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: #111;
+  margin-bottom: 1.5rem;
+}
+
+.intro {
+  font-size: 1rem;
+  color: #444;
+  line-height: 1.8;
+  margin-bottom: 3rem;
+  border-left: 3px solid #111;
+  padding-left: 1.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.infoBlock {
+  margin-bottom: 2rem;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #111;
+  margin-bottom: 0.5rem;
+}
+
+.info p {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.8;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #555;
+}
+
+.input, .textarea {
+  padding: 0.8rem 1rem;
+  background-color: #fff;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #111;
+  font-size: 1rem;
+  font-family: 'Libre Baskerville', Georgia, serif;
+  outline: none;
+  transition: border 0.2s ease;
+  resize: none;
+}
+
+.input:focus, .textarea:focus {
+  border: 2px dashed #222;
+}
+
+.button {
+  padding: 0.9rem;
+  background-color: #111;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: 'Libre Baskerville', Georgia, serif;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.button:hover {
+  background-color: #333;
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,136 @@
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem var(--padding-page);
+  color: #fff;
+}
+
+.back {
+  background: none;
+  border: 1px solid #444;
+  color: #aaa;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 2rem;
+  transition: color 0.2s;
+}
+
+.back:hover { color: #fff; }
+
+.title {
+  font-size: 1.6rem;
+  margin-bottom: 2rem;
+}
+
+.error {
+  background-color: #3a1a1a;
+  border: 1px solid #c0392b;
+  color: #e74c3c;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+}
+
+.form { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.field label { font-size: 0.9rem; color: #aaa; }
+
+.field input,
+.field select,
+.field textarea {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+  padding: 0.7rem 1rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: #4a90d9;
+}
+
+.field select option { background-color: #1a1a1a; }
+
+.materialesSection { display: flex; flex-direction: column; gap: 0.8rem; }
+
+.materialesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.materialesHeader label { font-size: 0.9rem; color: #aaa; }
+
+.addBtn {
+  background: none;
+  border: 1px solid #4a90d9;
+  color: #4a90d9;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+.addBtn:hover { background-color: #1a3a5a; }
+
+.materialRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr auto;
+  gap: 0.5rem;
+}
+
+.materialRow input {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.9rem;
+}
+
+.materialRow input:focus {
+  outline: none;
+  border-color: #4a90d9;
+}
+
+.removeBtn {
+  background: none;
+  border: 1px solid #555;
+  color: #888;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0 0.6rem;
+  transition: color 0.2s;
+}
+
+.removeBtn:hover { color: #e74c3c; border-color: #e74c3c; }
+
+.submitBtn {
+  background-color: #4a90d9;
+  color: #fff;
+  border: none;
+  padding: 0.9rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 1rem;
+}
+
+.submitBtn:hover { background-color: #357abd; }
+.submitBtn:disabled { background-color: #333; color: #666; cursor: not-allowed; }
+
+@media (max-width: 600px) {
+  .materialRow { grid-template-columns: 1fr 1fr; }
+  .materialRow input:last-of-type { grid-column: span 2; }
+}

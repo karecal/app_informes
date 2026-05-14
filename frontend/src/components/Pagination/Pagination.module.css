@@ -1,0 +1,35 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.button {
+  background: none;
+  border: 1px solid #fff;
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.button:hover:not(:disabled) {
+  background-color: #333;
+}
+
+.button:disabled {
+  border-color: #444;
+  color: #444;
+  cursor: not-allowed;
+}
+
+.info {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
