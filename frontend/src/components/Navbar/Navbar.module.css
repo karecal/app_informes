@@ -45,6 +45,26 @@
   color: #fff;
 }
 
+.userName {
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.logoutBtn {
+  background-color: #111;
+  color: #fff;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.logoutBtn:hover {
+  background-color: #333;
+}
+
 @media (max-width: 600px) {
   .navbar {
     flex-direction: column;

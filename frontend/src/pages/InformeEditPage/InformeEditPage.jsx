@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import usePatrimonio from '../../hooks/usePatrimonio'
-import styles from './InformeFormPage.module.css'
+import { useAuth } from '../../hooks/useAuth'
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner'
+import styles from './InformeEditPage.module.css'
 import CustomSelect from '../../components/CustomSelect/CustomSelect'
 
 const materialVacio = { nombre: '', cantidad: '', proveedor: '' }
 
-function InformeFormPage() {
+function InformeEditPage() {
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const { bienes, fetchBienes, createInforme } = usePatrimonio()
+  const { id } = useParams()
+  const { fetchInforme } = usePatrimonio()
+  const { user, isAdmin } = useAuth()
 
   const [form, setForm] = useState({
     titulo: '',
@@ -17,23 +20,46 @@ function InformeFormPage() {
     tratamiento: '',
     procedimientos: '',
     fechaInicio: '',
-    bienId: ''
+    fechaFin: '',
+    estado: 'EN_CURSO'
   })
   const [materiales, setMateriales] = useState([{ ...materialVacio }])
+  const [bienId, setBienId] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    fetchBienes({ search: '', tipo: '', municipio: '', tipoPatrimonio: '', estilo: '' }, 1)
-  }, [fetchBienes])
+    const cargar = async () => {
+      const data = await fetchInforme(id)
+      if (!data) {
+        setError('Informe no encontrado')
+        setLoading(false)
+        return
+      }
 
-  // Pre-selecciona el bien cuando cargan los bienes
-  useEffect(() => {
-    const bienId = searchParams.get('bienId')
-    if (bienId && bienes.length > 0) {
-      setForm(prev => ({ ...prev, bienId }))
+      // Verificar permisos: admin ve todo, restaurador solo sus informes
+      if (!isAdmin && data.restauradorId !== user?.id) {
+        setError('No tienes permisos para editar este informe')
+        setLoading(false)
+        return
+      }
+
+      setBienId(data.bienId)
+      setForm({
+        titulo: data.titulo || '',
+        diagnostico: data.diagnostico || '',
+        tratamiento: data.tratamiento || '',
+        procedimientos: data.procedimientos || '',
+        fechaInicio: data.fechaInicio ? data.fechaInicio.split('T')[0] : '',
+        fechaFin: data.fechaFin ? data.fechaFin.split('T')[0] : '',
+        estado: data.estado || 'EN_CURSO'
+      })
+      setMateriales(data.materiales?.length > 0 ? data.materiales : [{ ...materialVacio }])
+      setLoading(false)
     }
-  }, [bienes, searchParams])
+    cargar()
+  }, [id])
 
   const handleChange = (e) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -57,16 +83,31 @@ function InformeFormPage() {
     e.preventDefault()
     setError(null)
 
-    if (!form.titulo || !form.diagnostico || !form.tratamiento || !form.bienId || !form.fechaInicio) {
+    if (!form.titulo || !form.diagnostico || !form.tratamiento) {
       setError('Por favor rellena todos los campos obligatorios')
       return
     }
 
     try {
       setSubmitting(true)
+      const token = localStorage.getItem('token')
       const materialesFiltrados = materiales.filter(m => m.nombre.trim() !== '')
-      await createInforme({ ...form, bienId: Number(form.bienId), materiales: materialesFiltrados })
-      navigate(`/bien/${form.bienId}`, { replace: true })
+
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/informes/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ ...form, materiales: materialesFiltrados })
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Error al actualizar')
+      }
+
+      navigate(`/bien/${bienId}`, { replace: true })
     } catch (err) {
       setError(err.message)
     } finally {
@@ -74,29 +115,18 @@ function InformeFormPage() {
     }
   }
 
+  if (loading) return <LoadingSpinner />
+  if (error) return <p style={{ color: '#111', padding: '2rem' }}>{error}</p>
+
   return (
     <div className={styles.container}>
       <button className={styles.back} onClick={() => navigate(-1)}>← Volver</button>
-      <h1 className={styles.title}>Nuevo informe de conservación</h1>
+      <h1 className={styles.title}>Editar informe</h1>
 
       {error && <p className={styles.error}>{error}</p>}
 
       <form onSubmit={handleSubmit} className={styles.form}>
 
-        {/* Bien patrimonial */}
-        <div className={styles.field}>
-          <label>Bien patrimonial *</label>
-          <CustomSelect
-            value={form.bienId}
-            onChange={(val) => setForm(prev => ({ ...prev, bienId: val }))}
-            options={[
-              { value: '', label: 'Selecciona un bien' },
-              ...bienes.map(b => ({ value: String(b.id), label: b.nombre }))
-            ]}
-          />
-        </div>
-
-        {/* Título */}
         <div className={styles.field}>
           <label>Título del informe *</label>
           <input
@@ -104,12 +134,10 @@ function InformeFormPage() {
             name="titulo"
             value={form.titulo}
             onChange={handleChange}
-            placeholder="Ej: Restauración fase 1 — limpieza"
             required
           />
         </div>
 
-        {/* Fecha inicio */}
         <div className={styles.field}>
           <label>Fecha de inicio *</label>
           <input
@@ -121,7 +149,29 @@ function InformeFormPage() {
           />
         </div>
 
-        {/* Diagnóstico */}
+        <div className={styles.field}>
+          <label>Fecha de fin</label>
+          <input
+            type="date"
+            name="fechaFin"
+            value={form.fechaFin}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className={styles.field}>
+          <label>Estado</label>
+          <CustomSelect
+            value={form.estado}
+            onChange={(val) => setForm(prev => ({ ...prev, estado: val }))}
+            options={[
+              { value: 'PENDIENTE', label: 'Pendiente' },
+              { value: 'EN_CURSO', label: 'En curso' },
+              { value: 'FINALIZADO', label: 'Finalizado' },
+            ]}
+          />
+        </div>
+
         <div className={styles.field}>
           <label>Diagnóstico *</label>
           <textarea
@@ -129,12 +179,10 @@ function InformeFormPage() {
             value={form.diagnostico}
             onChange={handleChange}
             rows={3}
-            placeholder="Describe el estado actual del bien"
             required
           />
         </div>
 
-        {/* Tratamiento */}
         <div className={styles.field}>
           <label>Tratamiento propuesto *</label>
           <textarea
@@ -142,12 +190,10 @@ function InformeFormPage() {
             value={form.tratamiento}
             onChange={handleChange}
             rows={3}
-            placeholder="Describe el tratamiento a realizar"
             required
           />
         </div>
 
-        {/* Procedimientos */}
         <div className={styles.field}>
           <label>Procedimientos</label>
           <textarea
@@ -155,11 +201,9 @@ function InformeFormPage() {
             value={form.procedimientos}
             onChange={handleChange}
             rows={3}
-            placeholder="Pasos específicos del proceso"
           />
         </div>
 
-        {/* Materiales */}
         <div className={styles.materialesSection}>
           <div className={styles.materialesHeader}>
             <label>Materiales utilizados</label>
@@ -200,11 +244,11 @@ function InformeFormPage() {
         </div>
 
         <button type="submit" className={styles.submitBtn} disabled={submitting}>
-          {submitting ? 'Guardando...' : 'Crear informe'}
+          {submitting ? 'Guardando...' : 'Guardar cambios'}
         </button>
       </form>
     </div>
   )
 }
 
-export default InformeFormPage
+export default InformeEditPage

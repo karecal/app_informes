@@ -1,13 +1,14 @@
 .main {
   padding: var(--padding-page);
-  background-color: #111;
+  background-color: #fff;
   min-height: 100vh;
 }
 
 .heading {
-  color: #fff;
-  font-size: 1.8rem;
-  margin-bottom: 2rem;
+  color: #111;
+  font-size: 2rem;
+  margin-top: 3rem;;
+  margin-bottom: 4rem;
   letter-spacing: 2px;
   text-transform: uppercase;
   text-align: center;
@@ -20,9 +21,29 @@
 }
 
 .noResults {
-  color: #aaa;
+  color: #555;
   font-size: 1rem;
   margin-top: 2rem;
+}
+
+.newBienBtn {
+  background-color: #80c9b5;
+  color: #111;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  transition: background 0.2s;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.newBienBtn:hover {
+  background-color: #80c9b5;
+  color: #fff;
 }
 
 @media (max-width: 600px) {

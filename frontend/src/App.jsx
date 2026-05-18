@@ -11,12 +11,13 @@ import HomePage from './pages/HomePage/HomePage'
 import LoginPage from './pages/LoginPage/LoginPage'
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage'
 import AboutPage from './pages/AboutPage/AboutPage'
-import TeamPage from './pages/TeamPage/TeamPage'
 import FaqPage from './pages/FaqPage/FaqPage'
 import ContactPage from './pages/ContactPage/ContactPage'
-import NewsletterPage from './pages/NewsletterPage/NewsletterPage'
 import BienDetailPage from './pages/BienDetailPage/BienDetailPage'
 import InformeFormPage from './pages/InformeFormPage/InformeFormPage'
+import InformeEditPage from './pages/InformeEditPage/InformeEditPage'
+import BienFormPage from './pages/BienFormPage/BienFormPage'
+import BienEditPage from './pages/BienEditPage/BienEditPage'
 
 
 function App() {
@@ -30,18 +31,22 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/team" element={<TeamPage />} />
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/newsletter" element={<NewsletterPage />} />
-          <Route path="/bien/:id" element={<BienDetailPage />} />
-          <Route path="/informe/nuevo" element={<InformeFormPage />} />
-
+          <Route path="/bien/:id/editar" element={
+          <ProtectedRoute requiredRole="admin"><BienEditPage /></ProtectedRoute>
+           } />
           
-          {/* Protegidas - próximamente */}
-          {/* <Route path="/bien/:id" element={<ProtectedRoute><BienDetailPage /></ProtectedRoute>} /> */}
-          {/* <Route path="/informe/new" element={<ProtectedRoute><InformeFormPage /></ProtectedRoute>} /> */}
-          {/* <Route path="/dashboard" element={<ProtectedRoute requiredRole="admin"><DashboardPage /></ProtectedRoute>} /> */}
+
+          {/* Bien — nuevo ANTES que :id */}
+          <Route path="/bien/nuevo" element={
+            <ProtectedRoute requiredRole="admin"><BienFormPage /></ProtectedRoute>
+          } />
+          <Route path="/bien/:id" element={<BienDetailPage />} />
+
+          {/* Informes */}
+          <Route path="/informe/nuevo" element={<ProtectedRoute><InformeFormPage /></ProtectedRoute>} />
+          <Route path="/informe/:id/editar" element={<ProtectedRoute><InformeEditPage /></ProtectedRoute>} />
 
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />

@@ -1,15 +1,16 @@
 # Patrimonio Info
 
-Aplicación web para la gestión de informes de conservación-restauración de bienes patrimoniales. Desarrollada como proyecto de uso para la gestión del patrimonio cultural con motivo del Bootcamp de Desarrollo Web Full-stack Ironhack-FULP.
+Aplicación web para la gestión de informes de conservación-restauración de bienes patrimoniales. Desarrollada como proyecto final del Bootcamp de Desarrollo Web Full-stack Ironhack-FULP.
 
-## 🚀 Stack tecnológico
+## Stack tecnológico
 
 **Frontend**
 
 - React 18 + Vite
-- React Router v6
+- React Router v7
 - Context API (AuthContext + PatrimonioContext)
 - CSS Modules
+- Vitest + @testing-library/react (tests)
 
 **Backend**
 
@@ -18,17 +19,16 @@ Aplicación web para la gestión de informes de conservación-restauración de b
 - JWT para autenticación
 - Roles: `ADMIN` y `RESTAURADOR`
 
-## 📁 Estructura del proyecto
+## Estructura del proyecto
 
 ```
 app_informes/
 ├── frontend/        # React + Vite
 ├── backend/         # Express + Prisma
-├── README.md
-└── spec.md
+└── README.md
 ```
 
-## ⚙️ Instalación local
+## Instalación local
 
 ### Requisitos previos
 
@@ -49,12 +49,17 @@ cd backend
 npm install
 ```
 
-Crea un archivo `.env` en `/backend`:
+Copia `.env.example` a `.env` y rellena los valores:
+
+```bash
+cp .env.example .env
+```
 
 ```env
-DATABASE_URL="postgresql://usuario:password@localhost:5432/ars_patrimonio_db"
-JWT_SECRET="tu_clave_secreta"
+DATABASE_URL="postgresql://usuario:contraseña@localhost:5432/nombre_db"
 PORT=3000
+JWT_SECRET=tu_clave_secreta_aqui
+JWT_EXPIRES_IN=7d
 ```
 
 Ejecuta la migración y el seed:
@@ -79,7 +84,11 @@ cd frontend
 npm install
 ```
 
-Crea un archivo `.env` en `/frontend`:
+Copia `.env.example` a `.env`:
+
+```bash
+cp .env.example .env
+```
 
 ```env
 VITE_API_URL=http://localhost:3000/api
@@ -93,7 +102,14 @@ npm run dev
 
 El frontend corre en `http://localhost:5173`
 
-## 👤 Usuarios de prueba
+### 4. Ejecutar los tests
+
+```bash
+cd frontend
+npm test
+```
+
+## Usuarios de prueba (seed)
 
 | Rol         | Email                | Contraseña |
 | ----------- | -------------------- | ---------- |
@@ -101,54 +117,69 @@ El frontend corre en `http://localhost:5173`
 | Restaurador | juan@patrimonio.com  | juan123    |
 | Restaurador | maria@patrimonio.com | maria123   |
 
-## 🗄️ Modelo de datos
+## Modelo de datos
 
-- **Usuario** — autenticación y roles (ADMIN / RESTAURADOR)
-- **Bien** — bien patrimonial mueble o inmueble
+- **Usuario** — autenticación y roles (`ADMIN` / `RESTAURADOR`)
+- **Bien** — bien patrimonial con tipo, municipio, tipo de patrimonio, estilo, ubicación e imagen
 - **Informe** — informe de conservación-restauración asociado a un bien y un restaurador
 - **MaterialInforme** — materiales utilizados en cada intervención
 
-## 📡 Endpoints principales
+## Endpoints principales
 
-| Método | Endpoint             | Descripción                  | Auth       |
-| ------ | -------------------- | ---------------------------- | ---------- |
-| POST   | `/api/auth/register` | Registro de usuario          | No         |
-| POST   | `/api/auth/login`    | Login, devuelve JWT          | No         |
-| GET    | `/api/bienes`        | Listar bienes                | Sí         |
-| GET    | `/api/bienes/:id`    | Detalle de bien con informes | Sí         |
-| POST   | `/api/informes`      | Crear informe                | Sí         |
-| PUT    | `/api/informes/:id`  | Actualizar informe           | Sí         |
-| DELETE | `/api/informes/:id`  | Eliminar informe             | Sí         |
-| GET    | `/api/usuarios`      | Listar usuarios              | Solo admin |
+| Método | Endpoint              | Descripción                         | Auth           |
+| ------ | --------------------- | ----------------------------------- | -------------- |
+| POST   | `/api/auth/register`  | Registro de usuario                 | No             |
+| POST   | `/api/auth/login`     | Login, devuelve JWT                 | No             |
+| GET    | `/api/bienes`         | Listar bienes (con filtros y paginación) | No        |
+| GET    | `/api/bienes/:id`     | Detalle de bien con sus informes    | No             |
+| POST   | `/api/bienes`         | Crear bien patrimonial              | Solo admin     |
+| PUT    | `/api/bienes/:id`     | Actualizar bien patrimonial         | Solo admin     |
+| DELETE | `/api/bienes/:id`     | Eliminar bien patrimonial           | Solo admin     |
+| GET    | `/api/informes`       | Listar informes                     | Sí             |
+| POST   | `/api/informes`       | Crear informe                       | Sí             |
+| PUT    | `/api/informes/:id`   | Actualizar informe                  | Propietario o admin |
+| DELETE | `/api/informes/:id`   | Eliminar informe                    | Propietario o admin |
+| GET    | `/api/usuarios`       | Listar usuarios                     | Solo admin     |
 
-## 📄 Páginas
+## Páginas
 
-| Ruta             | Descripción                       |
-| ---------------- | --------------------------------- |
-| `/`              | Listado de bienes patrimoniales   |
-| `/bien/:id`      | Detalle del bien con sus informes |
-| `/informe/nuevo` | Formulario para crear un informe  |
-| `/login`         | Inicio de sesión                  |
-| `/about`         | Sobre el proyecto                 |
-| `/contact`       | Contacto                          |
+| Ruta                  | Descripción                              | Acceso          |
+| --------------------- | ---------------------------------------- | --------------- |
+| `/`                   | Listado de bienes patrimoniales          | Público         |
+| `/bien/:id`           | Detalle del bien con sus informes        | Público         |
+| `/bien/nuevo`         | Formulario para crear un bien            | Solo admin      |
+| `/bien/:id/editar`    | Formulario para editar un bien           | Solo admin      |
+| `/informe/nuevo`      | Formulario para crear un informe         | Autenticado     |
+| `/informe/:id/editar` | Formulario para editar un informe        | Propietario o admin |
+| `/login`              | Inicio de sesión                         | Público         |
+| `/about`              | Sobre el proyecto                        | Público         |
+| `/faq`                | Preguntas frecuentes                     | Público         |
+| `/contact`            | Contacto                                 | Público         |
 
-## 🌐 Deploy
+## Funcionalidades principales
 
-> Próximamente — Backend en Railway, Frontend en Vercel
+- Listado de bienes con filtros por nombre, municipio, tipo de bien, tipo de patrimonio, estilo y fecha
+- Paginación (30 bienes por página)
+- Detalle de bien con imagen, descripción y listado de informes de conservación
+- CRUD completo de bienes (admin) e informes (restaurador sobre los propios, admin sobre todos)
+- Autenticación JWT con rutas protegidas por rol
+- Dropdown personalizado con estilos propios (sin select nativo)
+- Tests con Vitest y Testing Library (15 tests)
 
-## 📌 Estado del proyecto
+## Estado del proyecto
 
 - [x] Backend completo (Express + PostgreSQL + Prisma)
 - [x] Autenticación JWT con roles
 - [x] CRUD de bienes e informes
-- [x] Frontend conectado a la API propia
+- [x] Frontend conectado a la API
 - [x] Listado y detalle de bienes
-- [x] Formulario de nuevo informe
-- [ ] Login en el frontend
-- [ ] Rutas protegidas
-- [ ] Tests (8 mínimo)
+- [x] Formularios de creación y edición
+- [x] Login y registro en el frontend
+- [x] Rutas protegidas por rol
+- [x] Filtros y paginación
+- [x] Tests (15 tests pasando)
 - [ ] Deploy en producción
 
-## 👩‍💻 Autora
+## Autora
 
 **Denise Echegaray** — [@karecal](https://github.com/karecal)

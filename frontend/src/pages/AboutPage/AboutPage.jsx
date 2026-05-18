@@ -4,33 +4,35 @@ function AboutPage() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <h1 className={styles.title}>Sobre nosotros</h1>
+        <h1 className={styles.title}>Sobre el proyecto</h1>
         <p className={styles.intro}>
-          El Harvard Art Museums es uno de los museos universitarios más grandes 
-          e influyentes del mundo, con una colección de más de 250.000 objetos 
-          que abarcan culturas y épocas de todo el planeta.
+          Patrimonio Info es una herramienta de gestión digital para el registro 
+          y seguimiento de los informes de conservación-restauración de los bienes 
+          patrimoniales de Gran Canaria.
         </p>
 
         <div className={styles.section}>
           <h2 className={styles.subtitle}>Nuestra misión</h2>
-          <p>Promover el estudio, la comprensión y el disfrute del arte a través 
-          de la investigación, la educación y la exhibición de nuestra colección, 
-          conectando el pasado con el presente.</p>
+          <p>Facilitar la documentación, el acceso y el seguimiento del estado de 
+          conservación del patrimonio cultural de la isla, poniendo en valor el trabajo 
+          de los profesionales de la restauración y garantizando la trazabilidad de 
+          cada intervención.</p>
         </div>
 
         <div className={styles.section}>
-          <h2 className={styles.subtitle}>Historia</h2>
-          <p>Fundado en 1895, el museo alberga tres colecciones distintas: el Fogg 
-          Museum, el Busch-Reisinger Museum y el Arthur M. Sackler Museum. En 2014 
-          se inauguró el edificio actual, diseñado por el arquitecto Renzo Piano, 
-          que unifica las tres colecciones bajo un mismo techo.</p>
+          <h2 className={styles.subtitle}>¿Qué gestionamos?</h2>
+          <p>La aplicación permite registrar bienes patrimoniales muebles, inmuebles 
+          e inmateriales de los 21 municipios de Gran Canaria, asociando a cada bien 
+          todos los informes de conservación-restauración realizados a lo largo del tiempo, 
+          con sus procedimientos, materiales y restauradores responsables.</p>
         </div>
 
         <div className={styles.section}>
-          <h2 className={styles.subtitle}>La colección</h2>
-          <p>Nuestra colección incluye obras de arte occidental, asiático e islámico, 
-          desde la antigüedad hasta el presente. Destacan especialmente las colecciones 
-          de arte europeo, arte asiático, arte islámico y arte contemporáneo.</p>
+          <h2 className={styles.subtitle}>Patrimonio de Gran Canaria</h2>
+          <p>Gran Canaria alberga un rico patrimonio cultural que abarca desde yacimientos 
+          arqueológicos de la cultura prehispánica canaria hasta arquitectura colonial, 
+          arte religioso barroco, patrimonio etnográfico y manifestaciones inmateriales 
+          de gran valor identitario para sus 21 municipios.</p>
         </div>
       </div>
     </div>

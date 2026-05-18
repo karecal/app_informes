@@ -1,26 +1,49 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth'
 import styles from './LoginPage.module.css'
 
 function LoginPage() {
   const [isLogin, setIsLogin] = useState(true)
+  const [nombre, setNombre] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [errorMsg, setErrorMsg] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  const { login, register } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    navigate('/')
+    setErrorMsg(null)
+    setLoading(true)
+
+    try {
+      if (isLogin) {
+        await login(email, password)
+      } else {
+        await register(nombre, email, password)
+      }
+      navigate('/')
+    } catch (err) {
+      setErrorMsg(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <div className={styles.container}>
       <div className={styles.card}>
         <h2 className={styles.title}>
-          {isLogin ? 'Iniciar sesión' : 'Crear Cuenta'}
+          {isLogin ? 'Iniciar sesión' : 'Crear cuenta'}
         </h2>
         {!isLogin && (
-  <p className={styles.subtitle}>Guarde sus colecciones y más</p>
-)}
-      
+          <p className={styles.subtitle}>Acceso para restauradores</p>
+        )}
+
+        {errorMsg && <p className={styles.error}>{errorMsg}</p>}
 
         <form onSubmit={handleSubmit} className={styles.form}>
           {!isLogin && (
@@ -28,30 +51,34 @@ function LoginPage() {
               type="text"
               placeholder="Nombre"
               className={styles.input}
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
               required
             />
-            
           )}
-
           <input
             type="email"
             placeholder="Email"
             className={styles.input}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
           <input
             type="password"
             placeholder="Contraseña"
             className={styles.input}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
           {isLogin && (
-  <p className={styles.forgot}>
-    <span className={styles.forgotLink}>¿Olvidaste tu contraseña?</span>
-  </p>
-)}
-          <button type="submit" className={styles.button}>
-            {isLogin ? 'Entrar' : 'Registrarse'}
+            <p className={styles.forgot}>
+              <span className={styles.forgotLink}>¿Olvidaste tu contraseña?</span>
+            </p>
+          )}
+          <button type="submit" className={styles.button} disabled={loading}>
+            {loading ? 'Cargando...' : isLogin ? 'Entrar' : 'Registrarse'}
           </button>
         </form>
 

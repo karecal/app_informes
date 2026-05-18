@@ -2,16 +2,22 @@ import { useState, useEffect } from 'react'
 import usePatrimonio from '../../hooks/usePatrimonio'
 import BienCard from '../../components/BienCard/BienCard'
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner'
-import Pagination from '../../components/Pagination/Pagination'
 import styles from './HomePage.module.css'
+import BienSearchBar from '../../components/BienSearchBar/BienSearchBar'
+import { useAuth } from '../../hooks/useAuth'
+import { useNavigate } from 'react-router-dom'
 
 function HomePage() {
+  const { isAdmin } = useAuth()
+  const navigate = useNavigate()
   const {
     bienes,
     loading,
+    initialLoading,
     error,
     page,
     setPage,
+    
     totalPages,
     filters,
     handleFilterChange,
@@ -26,40 +32,29 @@ function HomePage() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const handlePageChange = (newPage) => {
-    setPage(newPage)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  if (loading) return <LoadingSpinner />
+  if (initialLoading) return <LoadingSpinner />
   if (error) return <p>Error: {error}</p>
 
   return (
     <main className={styles.main}>
-      {showHeading && <h2 className={styles.heading}>Bienes Patrimoniales</h2>}
+      {showHeading && <h2 className={styles.heading}>Encuentra tu informe</h2>}
 
-      {/* Barra de búsqueda simple */}
-      <div className={styles.searchRow}>
-        <input
-          type="text"
-          placeholder="Buscar bien patrimonial..."
-          value={filters.search}
-          onChange={(e) => handleFilterChange({ search: e.target.value })}
-          className={styles.searchInput}
-        />
-        <select
-          value={filters.tipo}
-          onChange={(e) => handleFilterChange({ tipo: e.target.value })}
-          className={styles.select}
-        >
-          <option value="">Todos los tipos</option>
-          <option value="MUEBLE">Mueble</option>
-          <option value="INMUEBLE">Inmueble</option>
-        </select>
-        <button onClick={handleReset} className={styles.resetBtn}>
-          Limpiar
-        </button>
-      </div>
+      
+
+      <BienSearchBar
+      filters={filters}
+       onFilterChange={handleFilterChange}
+       onReset={handleReset}
+      />
+
+      {isAdmin && (
+      <button
+      className={styles.newBienBtn}
+      onClick={() => navigate('/bien/nuevo')}
+      >
+        + Nuevo bien patrimonial
+      </button>
+      )}
 
       {bienes.length === 0 ? (
         <p className={styles.noResults}>No se encontraron bienes</p>
@@ -71,11 +66,6 @@ function HomePage() {
         </div>
       )}
 
-      <Pagination
-        page={page}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
     </main>
   )
 }

@@ -1,0 +1,77 @@
+.wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.trigger {
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  color: #111;
+  padding: 0.6rem 2rem 0.6rem 0.8rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: border-color 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trigger:focus {
+  outline: none;
+  border-color: #f4a7b9;
+}
+
+.triggerOpen {
+  border-color: #f4a7b9;
+}
+
+.arrow {
+  font-size: 0.6rem;
+  color: #888;
+  flex-shrink: 0;
+  margin-left: 0.4rem;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #f4a7b9;
+  border-radius: 6px;
+  z-index: 100;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.option {
+  padding: 0.5rem 0.8rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #111;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.option:hover {
+  background-color: #f0f0f0;
+}
+
+.optionSelected {
+  background-color: #f4a7b9;
+  color: #111;
+  font-weight: 600;
+}
+
+.optionSelected:hover {
+  background-color: #f4a7b9;
+}

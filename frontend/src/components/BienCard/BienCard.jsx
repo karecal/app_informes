@@ -8,30 +8,26 @@ function BienCard({ bien }) {
     navigate(`/bien/${bien.id}`)
   }
 
-  const tipoBadgeColor = bien.tipo === 'MUEBLE' ? '#4a90d9' : '#7b5ea7'
-
   return (
     <div
       className={styles.card}
       onClick={handleClick}
       style={{ border: '1px solid #222' }}
     >
-      <div className={styles.noImage}>
-        <span className={styles.tipoIcon}>
-          {bien.tipo === 'MUEBLE' ? '🏺' : '🏛️'}
-        </span>
-      </div>
+      {bien.imagen ? (
+        <img src={bien.imagen} alt={bien.nombre} className={styles.image} />
+      ) : (
+        <div className={styles.noImage}>
+          <span className={styles.tipoIcon}>
+            {bien.tipo === 'MUEBLE' ? '🏺' : bien.tipo === 'INMUEBLE' ? '🏛️' : '🎭'}
+          </span>
+        </div>
+      )}
       <div className={styles.info}>
-        <span
-          className={styles.tipoBadge}
-          style={{ backgroundColor: tipoBadgeColor }}
-        >
-          {bien.tipo}
-        </span>
         <h3 className={styles.title}>{bien.nombre}</h3>
         <p className={styles.ubicacion}>📍 {bien.ubicacion}</p>
         <p className={styles.informes}>
-          {bien.informes?.length ?? 0} informe(s)
+          {bien._count?.informes ?? 0} informe(s)
         </p>
       </div>
     </div>

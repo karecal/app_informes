@@ -1,67 +1,40 @@
-import { useState } from 'react'
 import styles from './FaqPage.module.css'
 
-const faqs = [
+const FAQS = [
   {
-    question: '¿Cuál es el horario del museo?',
-    answer: 'El museo está abierto de martes a domingo de 10:00 a 17:00 horas. Cerrado los lunes y los días festivos nacionales.'
+    pregunta: '¿Cómo añado un nuevo bien patrimonial?',
+    respuesta: 'Solo los administradores pueden crear bienes. Una vez autenticado como admin, verás el botón "+ Nuevo bien patrimonial" en la página principal. Rellena el formulario con los datos del bien y guarda.'
   },
   {
-    question: '¿Cuál es el precio de la entrada?',
-    answer: 'La entrada general cuesta 20 dólares. Estudiantes y mayores de 65 años tienen un descuento del 50%. Los menores de 18 años y los miembros de la comunidad universitaria de Harvard entran gratis.'
+    pregunta: '¿Quién puede crear o eliminar bienes?',
+    respuesta: 'Solo los usuarios con rol de administrador pueden crear, editar y eliminar bienes patrimoniales. Los restauradores pueden crear y editar sus propios informes.'
   },
   {
-    question: '¿Cómo puedo acceder a la colección online?',
-    answer: 'Toda nuestra colección está disponible online a través de esta aplicación y de nuestra web oficial. Puedes buscar por título, autor, cultura, período y mucho más.'
+    pregunta: '¿Cómo registro un informe de conservación?',
+    respuesta: 'Entra en el detalle de un bien patrimonial y pulsa el botón "+ Nuevo informe". Rellena el diagnóstico, tratamiento, procedimientos, materiales utilizados y fechas. El informe quedará asociado automáticamente a tu usuario.'
   },
   {
-    question: '¿Se pueden hacer visitas guiadas?',
-    answer: 'Sí, ofrecemos visitas guiadas en inglés y español todos los fines de semana a las 11:00 y a las 14:00 horas. También es posible contratar visitas guiadas privadas para grupos.'
+    pregunta: '¿Cómo busco informes de un período concreto?',
+    respuesta: 'En la página principal encontrarás los filtros "Informes desde" e "Informes hasta". Introduce el año de inicio y fin del período y el sistema mostrará los bienes que tienen intervenciones en ese rango.'
   },
   {
-    question: '¿Está permitida la fotografía en el museo?',
-    answer: 'Se permite la fotografía sin flash para uso personal en la mayoría de las salas. Algunas obras tienen restricciones de copyright — en esos casos se indica claramente en la sala.'
-  },
-  {
-    question: '¿Cómo puedo hacer una donación?',
-    answer: 'Puedes realizar donaciones a través de nuestra web oficial o contactando directamente con nuestro departamento de desarrollo. Todas las donaciones son deducibles de impuestos.'
-  },
-  {
-    question: '¿El museo es accesible para personas con movilidad reducida?',
-    answer: 'Sí, el edificio es completamente accesible. Disponemos de rampas, ascensores, sillas de ruedas disponibles en recepción y aseos adaptados en todas las plantas.'
+    pregunta: '¿Puedo editar un informe ya creado?',
+    respuesta: 'Sí. Los restauradores pueden editar sus propios informes y los administradores pueden editar cualquier informe. Entra en el detalle del bien, localiza el informe y pulsa el botón de edición.'
   }
 ]
 
 function FaqPage() {
-  const [openIndex, setOpenIndex] = useState(null)
-
-  const handleToggle = (index) => {
-    setOpenIndex(openIndex === index ? null : index)
-  }
-
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <h1 className={styles.title}>Preguntas Frecuentes</h1>
-        <p className={styles.intro}>
-          Encuentra respuesta a las preguntas más habituales sobre 
-          nuestra colección, visitas y servicios.
-        </p>
+        <h1 className={styles.title}>Preguntas frecuentes</h1>
+        <p className={styles.intro}>Resuelve tus dudas sobre el uso de Patrimonio Info.</p>
+
         <div className={styles.list}>
-          {faqs.map((faq, index) => (
-            <div key={index} className={styles.item}>
-              <button
-                className={styles.question}
-                onClick={() => handleToggle(index)}
-              >
-                {faq.question}
-                <span className={styles.icon}>
-                  {openIndex === index ? '−' : '+'}
-                </span>
-              </button>
-              {openIndex === index && (
-                <p className={styles.answer}>{faq.answer}</p>
-              )}
+          {FAQS.map((faq, i) => (
+            <div key={i} className={styles.item}>
+              <h2 className={styles.question}>{faq.pregunta}</h2>
+              <p className={styles.answer}>{faq.respuesta}</p>
             </div>
           ))}
         </div>

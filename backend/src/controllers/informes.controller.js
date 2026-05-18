@@ -1,4 +1,5 @@
 import { prisma } from '../config/db.js'
+import { enviarNotificacionInforme } from '../config/email.js'
 
 // GET /api/informes
 export const listarInformes = async (req, res, next) => {
@@ -105,7 +106,12 @@ export const crearInforme = async (req, res, next) => {
       },
       include: { bien: true, restaurador: { select: { nombre: true } }, materiales: true }
     })
-
+// Enviar notificación por email (no bloqueante)
+enviarNotificacionInforme({
+  titulo: informe.titulo,
+  bien: informe.bien.nombre,
+  restaurador: informe.restaurador.nombre
+}).catch(err => console.error('Error enviando email:', err))
     res.status(201).json(informe)
   } catch (err) {
     next(err)

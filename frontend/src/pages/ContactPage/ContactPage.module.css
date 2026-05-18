@@ -49,6 +49,35 @@
   line-height: 1.8;
 }
 
+.section {
+  margin-bottom: 2rem;
+}
+
+.name {
+  font-size: 1rem;
+  color: #111;
+  font-weight: 600;
+  margin-top: 0.4rem;
+}
+
+.role {
+  font-size: 0.95rem;
+  color: #444;
+  margin-top: 0.2rem;
+}
+
+.link {
+  font-size: 0.95rem;
+  color: #111;
+  text-decoration: underline;
+  margin-top: 0.4rem;
+  display: inline-block;
+}
+
+.link:hover {
+  color: #555;
+}
+
 .form {
   display: flex;
   flex-direction: column;

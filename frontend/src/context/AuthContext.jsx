@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }) => {
     return localStorage.getItem('token')
   }, [])
 
-  const isAdmin = user?.rol === 'admin'
+  const isAdmin = user?.rol === 'ADMIN'
   const isAuthenticated = !!user
 
   const value = {

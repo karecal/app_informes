@@ -1,15 +1,4 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  background-color: #111;
-  font-family: 'Libre Baskerville', Georgia, serif;
-  color: #fff;
-}
-
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 
 * {
   margin: 0;
@@ -18,9 +7,9 @@ body {
 }
 
 body {
-  background-color: #111;
-  font-family: 'Georgia', serif;
-  color: #fff;
+  background-color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  color: #111;
 }
 
 img {
@@ -31,6 +20,10 @@ img {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+button {
+  font-family: inherit;
 }
 
 /* RESPONSIVE BASE */

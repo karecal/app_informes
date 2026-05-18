@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Enums
 enum Rol {
   ADMIN
   RESTAURADOR
@@ -16,6 +15,7 @@ enum Rol {
 enum TipoBien {
   MUEBLE
   INMUEBLE
+  INMATERIAL
 }
 
 enum Estado {
@@ -24,7 +24,35 @@ enum Estado {
   PENDIENTE
 }
 
-// Models
+enum TipoPatrimonio {
+  ARQUEOLOGICO
+  ARQUITECTONICO
+  ARTISTICO
+  DOCUMENTAL
+  ETNOGRAFICO
+  INDUSTRIAL
+  MUSICAL
+}
+
+enum EstiloBien {
+  ACADEMICISMO
+  BARROCO
+  CLASICISMO
+  ECLECTICISMO
+  FLAMENCO
+  GOTICO
+  INDIGENISMO
+  MODERNISMO
+  MUDEJAR
+  NEOCANARIO
+  NEOCLASICO
+  NEOGÓTICO
+  RACIONALISMO
+  RENACIMIENTO
+  ROMANTICISMO
+  TRADICIONAL_POPULAR
+}
+
 model Usuario {
   id        Int       @id @default(autoincrement())
   nombre    String    @db.VarChar(100)
@@ -40,49 +68,52 @@ model Usuario {
 }
 
 model Bien {
-  id          Int       @id @default(autoincrement())
-  nombre      String    @db.VarChar(255)
-  tipo        TipoBien
-  ubicacion   String    @db.VarChar(255)
-  descripcion String?
-  imagen      String?
-  fechaIngreso DateTime @default(now())
-  informes    Informe[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id             Int             @id @default(autoincrement())
+  nombre         String          @db.VarChar(255)
+  tipo           TipoBien
+  municipio      String?         @db.VarChar(100)
+  tipoPatrimonio TipoPatrimonio?
+  estilo         EstiloBien?
+  ubicacion      String          @db.VarChar(255)
+  descripcion    String?
+  imagen         String?
+  fechaIngreso   DateTime        @default(now())
+  informes       Informe[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   @@map("bienes")
 }
 
 model Informe {
-  id             Int                @id @default(autoincrement())
-  titulo         String             @db.VarChar(255)
+  id             Int               @id @default(autoincrement())
+  titulo         String            @db.VarChar(255)
   diagnostico    String
   tratamiento    String
   procedimientos String
-  estado         Estado             @default(EN_CURSO)
+  estado         Estado            @default(EN_CURSO)
   fechaInicio    DateTime
   fechaFin       DateTime?
   notas          String?
-  bien           Bien               @relation(fields: [bienId], references: [id], onDelete: Cascade)
+  bien           Bien              @relation(fields: [bienId], references: [id], onDelete: Cascade)
   bienId         Int
-  restaurador    Usuario            @relation(fields: [restauradorId], references: [id], onDelete: Cascade)
+  restaurador    Usuario           @relation(fields: [restauradorId], references: [id], onDelete: Cascade)
   restauradorId  Int
   materiales     MaterialInforme[]
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
 
   @@map("informes")
 }
 
 model MaterialInforme {
-  id         Int       @id @default(autoincrement())
-  nombre     String    @db.VarChar(255)
-  cantidad   String    @db.VarChar(100)
-  proveedor  String?   @db.VarChar(255)
-  informe    Informe   @relation(fields: [informeId], references: [id], onDelete: Cascade)
-  informeId  Int
-  createdAt  DateTime  @default(now())
+  id        Int      @id @default(autoincrement())
+  nombre    String   @db.VarChar(255)
+  cantidad  String   @db.VarChar(100)
+  proveedor String?  @db.VarChar(255)
+  informe   Informe  @relation(fields: [informeId], references: [id], onDelete: Cascade)
+  informeId Int
+  createdAt DateTime @default(now())
 
   @@map("materiales_informe")
 }

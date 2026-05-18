@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback, useEffect } from 'react'
+import { createContext, useState, useCallback, useEffect, useRef } from 'react'
 
 export const PatrimonioContext = createContext()
 
@@ -6,73 +6,90 @@ export const PatrimonioProvider = ({ children }) => {
   const [bienes, setBienes] = useState([])
   const [informes, setInformes] = useState([])
   const [loading, setLoading] = useState(false)
+  const [initialLoading, setInitialLoading] = useState(true)
   const [error, setError] = useState(null)
   
-  // Paginación
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [limit] = useState(10)
+  const [limit] = useState(30)
 
-  // Filtros
   const [filters, setFilters] = useState({
     search: '',
-    tipo: '', // MUEBLE | INMUEBLE
-    estadoInforme: '' // EN_CURSO | FINALIZADO | PENDIENTE
+    tipo: '',
+    municipio: '',
+    tipoPatrimonio: '',
+    estilo: '',
+    anioDesde: '',
+    anioHasta: ''
   })
+
+  const [lastUpdate, setLastUpdate] = useState(Date.now())
+  const searchTimerRef = useRef(null)
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
-  const token = localStorage.getItem('token')
 
-  // Obtener headers con auth
-  const getHeaders = () => ({
-    'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` })
-  })
+  const getHeaders = () => {
+    const token = localStorage.getItem('token')
+    return {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` })
+    }
+  }
 
-  // Obtener bienes con filtros y paginación
-  const fetchBienes = useCallback(async () => {
+  const fetchBienes = useCallback(async (currentFilters, currentPage) => {
     try {
       setLoading(true)
       setError(null)
 
       const params = new URLSearchParams()
-      params.append('page', page)
+      params.append('page', currentPage)
       params.append('limit', limit)
       
-      if (filters.search) params.append('search', filters.search)
-      if (filters.tipo) params.append('tipo', filters.tipo)
+      if (currentFilters.search) params.append('search', currentFilters.search)
+      if (currentFilters.tipo) params.append('tipo', currentFilters.tipo)
+      if (currentFilters.municipio) params.append('municipio', currentFilters.municipio)
+      if (currentFilters.tipoPatrimonio) params.append('tipoPatrimonio', currentFilters.tipoPatrimonio)
+      if (currentFilters.estilo) params.append('estilo', currentFilters.estilo)
+      if (currentFilters.anioDesde) params.append('anioDesde', currentFilters.anioDesde)
+      if (currentFilters.anioHasta) params.append('anioHasta', currentFilters.anioHasta)
 
       const res = await fetch(`${API_URL}/bienes?${params}`, {
         headers: getHeaders()
       })
 
-      if (!res.ok) {
-        throw new Error('Error al obtener bienes')
-      }
+      if (!res.ok) throw new Error('Error al obtener bienes')
 
       const data = await res.json()
       setBienes(data.data || data)
-      setTotalPages(data.totalPages || Math.ceil(data.length / limit))
+      setTotalPages(data.totalPages || Math.ceil((data.total || data.length) / limit))
     } catch (err) {
       setError(err.message)
       setBienes([])
     } finally {
       setLoading(false)
+      setInitialLoading(false)
     }
-  }, [page, limit, filters, API_URL, token])
+  }, [API_URL, limit])
 
-  // Obtener informe específico con detalles
+  // Fetch cuando cambian filtros no-texto, página o lastUpdate
+  useEffect(() => {
+    fetchBienes(filters, page)
+  }, [filters.tipo, filters.municipio, filters.tipoPatrimonio, filters.estilo, filters.anioDesde, filters.anioHasta, page, lastUpdate])
+
+  // Fetch con debounce solo para búsqueda de texto
+  useEffect(() => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current)
+    searchTimerRef.current = setTimeout(() => {
+      fetchBienes(filters, page)
+    }, 400)
+    return () => clearTimeout(searchTimerRef.current)
+  }, [filters.search])
+
   const fetchInforme = useCallback(async (id) => {
     try {
       setLoading(true)
-      const res = await fetch(`${API_URL}/informes/${id}`, {
-        headers: getHeaders()
-      })
-
-      if (!res.ok) {
-        throw new Error('Error al obtener el informe')
-      }
-
+      const res = await fetch(`${API_URL}/informes/${id}`, { headers: getHeaders() })
+      if (!res.ok) throw new Error('Error al obtener el informe')
       return await res.json()
     } catch (err) {
       setError(err.message)
@@ -80,19 +97,12 @@ export const PatrimonioProvider = ({ children }) => {
     } finally {
       setLoading(false)
     }
-  }, [API_URL, token])
+  }, [API_URL])
 
-  // Obtener informes de un bien
   const fetchInformesPorBien = useCallback(async (bienId) => {
     try {
-      const res = await fetch(`${API_URL}/bienes/${bienId}`, {
-        headers: getHeaders()
-      })
-
-      if (!res.ok) {
-        throw new Error('Error al obtener informes del bien')
-      }
-
+      const res = await fetch(`${API_URL}/bienes/${bienId}`, { headers: getHeaders() })
+      if (!res.ok) throw new Error('Error al obtener informes del bien')
       const bien = await res.json()
       setInformes(bien.informes || [])
       return bien
@@ -100,9 +110,8 @@ export const PatrimonioProvider = ({ children }) => {
       setError(err.message)
       return null
     }
-  }, [API_URL, token])
+  }, [API_URL])
 
-  // Crear informe
   const createInforme = useCallback(async (datos) => {
     try {
       const res = await fetch(`${API_URL}/informes`, {
@@ -110,58 +119,38 @@ export const PatrimonioProvider = ({ children }) => {
         headers: getHeaders(),
         body: JSON.stringify(datos)
       })
-
       if (!res.ok) {
         const err = await res.json()
         throw new Error(err.error || 'Error al crear el informe')
       }
-
       return await res.json()
     } catch (err) {
       setError(err.message)
       throw err
     }
-  }, [API_URL, token])
+  }, [API_URL])
 
-  // Actualizar filtros
   const handleFilterChange = useCallback((newFilters) => {
     setFilters(prev => ({ ...prev, ...newFilters }))
-    setPage(1) // Volver a página 1 al filtrar
+    if (!('search' in newFilters)) setPage(1)
   }, [])
 
-  // Reset filtros
   const handleReset = useCallback(() => {
-    setFilters({ search: '', tipo: '', estadoInforme: '' })
+    setFilters({ search: '', tipo: '', municipio: '', tipoPatrimonio: '', estilo: '', anioDesde: '', anioHasta: '' })
     setPage(1)
   }, [])
 
-  // Fetch inicial al cambiar page o filters
-  useEffect(() => {
-    fetchBienes()
-  }, [fetchBienes])
+  const refetchBienes = useCallback(() => {
+    setLastUpdate(Date.now())
+  }, [])
 
   const value = {
-    // Bienes
-    bienes,
-    loading,
-    error,
-    page,
-    setPage,
-    totalPages,
-    
-    // Informes
+    bienes, loading, initialLoading, error,
+    page, setPage, totalPages,
     informes,
-    
-    // Filtros
-    filters,
-    handleFilterChange,
-    handleReset,
-    
-    // Métodos
-    fetchBienes,
-    fetchInforme,
-    fetchInformesPorBien,
-    createInforme
+    filters, handleFilterChange, handleReset,
+    fetchBienes, refetchBienes,
+    fetchInforme, fetchInformesPorBien, createInforme
   }
 
   return (
