@@ -2,6 +2,11 @@
 
 Aplicación web para la gestión de informes de conservación-restauración de bienes patrimoniales. Desarrollada como proyecto final del Bootcamp de Desarrollo Web Full-stack Ironhack-FULP.
 
+## Demo en producción
+
+- **Frontend:** https://app-informes-kappa.vercel.app
+- **Backend API:** https://appinformes-production.up.railway.app/api
+
 ## Stack tecnológico
 
 **Frontend**
@@ -19,13 +24,82 @@ Aplicación web para la gestión de informes de conservación-restauración de b
 - JWT para autenticación
 - Roles: `ADMIN` y `RESTAURADOR`
 
+**Deploy**
+
+- Frontend: Vercel
+- Backend + base de datos: Railway
+
 ## Estructura del proyecto
 
 ```
 app_informes/
-├── frontend/        # React + Vite
-├── backend/         # Express + Prisma
-└── README.md
+├── README.md
+├── backend/
+│   ├── index.js                  # Entrada del servidor
+│   ├── .env.example
+│   ├── prisma/
+│   │   ├── schema.prisma         # Modelos de datos
+│   │   └── seed.js               # Datos de ejemplo
+│   └── src/
+│       ├── app.js                # Configuración Express
+│       ├── config/
+│       │   ├── db.js             # Cliente Prisma
+│       │   └── email.js          # Configuración nodemailer
+│       ├── controllers/
+│       │   ├── auth.controller.js
+│       │   ├── bienes.controller.js
+│       │   ├── informes.controller.js
+│       │   └── usuarios.controller.js
+│       ├── middleware/
+│       │   ├── auth.middleware.js    # Verificación JWT y roles
+│       │   └── error.middleware.js
+│       └── routes/
+│           ├── auth.routes.js
+│           ├── bienes.routes.js
+│           ├── informes.routes.js
+│           └── usuarios.routes.js
+└── frontend/
+    ├── index.html
+    ├── vite.config.js
+    ├── .env.example
+    └── src/
+        ├── main.jsx
+        ├── App.jsx               # Rutas y providers
+        ├── index.css             # Estilos globales
+        ├── context/
+        │   ├── AuthContext.jsx   # Sesión y usuario actual
+        │   └── PatrimonioContext.jsx  # Bienes, filtros y paginación
+        ├── hooks/
+        │   ├── useAuth.js
+        │   ├── usePatrimonio.js
+        │   └── useDebounce.js
+        ├── components/
+        │   ├── Navbar/
+        │   ├── Footer/           # Incluye paginación y mapa
+        │   ├── BienCard/         # Tarjeta de bien en el listado
+        │   ├── BienSearchBar/    # Filtros del listado
+        │   ├── CustomSelect/     # Dropdown personalizado
+        │   ├── Pagination/
+        │   ├── LoadingSpinner/
+        │   ├── ScrollToTop/
+        │   └── ProtectedRoute.jsx
+        ├── pages/
+        │   ├── HomePage/         # Listado con filtros
+        │   ├── BienDetailPage/   # Ficha del bien con informes
+        │   ├── BienFormPage/     # Crear bien (admin)
+        │   ├── BienEditPage/     # Editar bien (admin)
+        │   ├── InformeFormPage/  # Crear informe
+        │   ├── InformeEditPage/  # Editar informe
+        │   ├── LoginPage/
+        │   ├── AboutPage/
+        │   ├── FaqPage/
+        │   ├── ContactPage/
+        │   └── NotFoundPage/
+        └── tests/
+            ├── setup.js
+            ├── BienCard.test.jsx
+            ├── CustomSelect.test.jsx
+            └── Pagination.test.jsx
 ```
 
 ## Instalación local
@@ -126,35 +200,35 @@ npm test
 
 ## Endpoints principales
 
-| Método | Endpoint              | Descripción                         | Auth           |
-| ------ | --------------------- | ----------------------------------- | -------------- |
-| POST   | `/api/auth/register`  | Registro de usuario                 | No             |
-| POST   | `/api/auth/login`     | Login, devuelve JWT                 | No             |
-| GET    | `/api/bienes`         | Listar bienes (con filtros y paginación) | No        |
-| GET    | `/api/bienes/:id`     | Detalle de bien con sus informes    | No             |
-| POST   | `/api/bienes`         | Crear bien patrimonial              | Solo admin     |
-| PUT    | `/api/bienes/:id`     | Actualizar bien patrimonial         | Solo admin     |
-| DELETE | `/api/bienes/:id`     | Eliminar bien patrimonial           | Solo admin     |
-| GET    | `/api/informes`       | Listar informes                     | Sí             |
-| POST   | `/api/informes`       | Crear informe                       | Sí             |
-| PUT    | `/api/informes/:id`   | Actualizar informe                  | Propietario o admin |
-| DELETE | `/api/informes/:id`   | Eliminar informe                    | Propietario o admin |
-| GET    | `/api/usuarios`       | Listar usuarios                     | Solo admin     |
+| Método | Endpoint             | Descripción                              | Auth                |
+| ------ | -------------------- | ---------------------------------------- | ------------------- |
+| POST   | `/api/auth/register` | Registro de usuario                      | No                  |
+| POST   | `/api/auth/login`    | Login, devuelve JWT                      | No                  |
+| GET    | `/api/bienes`        | Listar bienes (con filtros y paginación) | No                  |
+| GET    | `/api/bienes/:id`    | Detalle de bien con sus informes         | No                  |
+| POST   | `/api/bienes`        | Crear bien patrimonial                   | Solo admin          |
+| PUT    | `/api/bienes/:id`    | Actualizar bien patrimonial              | Solo admin          |
+| DELETE | `/api/bienes/:id`    | Eliminar bien patrimonial                | Solo admin          |
+| GET    | `/api/informes`      | Listar informes                          | Sí                  |
+| POST   | `/api/informes`      | Crear informe                            | Sí                  |
+| PUT    | `/api/informes/:id`  | Actualizar informe                       | Propietario o admin |
+| DELETE | `/api/informes/:id`  | Eliminar informe                         | Propietario o admin |
+| GET    | `/api/usuarios`      | Listar usuarios                          | Solo admin          |
 
 ## Páginas
 
-| Ruta                  | Descripción                              | Acceso          |
-| --------------------- | ---------------------------------------- | --------------- |
-| `/`                   | Listado de bienes patrimoniales          | Público         |
-| `/bien/:id`           | Detalle del bien con sus informes        | Público         |
-| `/bien/nuevo`         | Formulario para crear un bien            | Solo admin      |
-| `/bien/:id/editar`    | Formulario para editar un bien           | Solo admin      |
-| `/informe/nuevo`      | Formulario para crear un informe         | Autenticado     |
-| `/informe/:id/editar` | Formulario para editar un informe        | Propietario o admin |
-| `/login`              | Inicio de sesión                         | Público         |
-| `/about`              | Sobre el proyecto                        | Público         |
-| `/faq`                | Preguntas frecuentes                     | Público         |
-| `/contact`            | Contacto                                 | Público         |
+| Ruta                  | Descripción                       | Acceso              |
+| --------------------- | --------------------------------- | ------------------- |
+| `/`                   | Listado de bienes patrimoniales   | Público             |
+| `/bien/:id`           | Detalle del bien con sus informes | Público             |
+| `/bien/nuevo`         | Formulario para crear un bien     | Solo admin          |
+| `/bien/:id/editar`    | Formulario para editar un bien    | Solo admin          |
+| `/informe/nuevo`      | Formulario para crear un informe  | Autenticado         |
+| `/informe/:id/editar` | Formulario para editar un informe | Propietario o admin |
+| `/login`              | Inicio de sesión                  | Público             |
+| `/about`              | Sobre el proyecto                 | Público             |
+| `/faq`                | Preguntas frecuentes              | Público             |
+| `/contact`            | Contacto                          | Público             |
 
 ## Funcionalidades principales
 
@@ -165,6 +239,36 @@ npm test
 - Autenticación JWT con rutas protegidas por rol
 - Dropdown personalizado con estilos propios (sin select nativo)
 - Tests con Vitest y Testing Library (15 tests)
+
+## Uso de inteligencia artificial
+
+Durante el desarrollo se utilizó **Claude** (Anthropic) como asistente de IA. Su uso se centró en:
+
+- Resolución de bugs puntuales (permisos por rol, navegación con el historial del navegador, overflow en grids CSS)
+- Implementación de componentes específicos (CustomSelect, paginación en footer)
+- Correcciones de estilos y migración de tema oscuro a claro
+- Configuración del entorno de tests (Vitest + Testing Library) y escritura de los casos de prueba
+- Revisión y actualización de documentación (README)
+
+En todos los casos la dirección, las decisiones de diseño y la revisión del resultado corrieron a cargo de la desarrolladora.
+
+## Tiempos de desarrollo
+
+Estimación basada en una dedicación de 6 horas diarias durante 5 días (30 horas totales).
+
+| Bloque de trabajo                                              | Estimado | Real     |
+| -------------------------------------------------------------- | -------- | -------- |
+| Día 1 — Setup del proyecto, modelos Prisma y seed inicial      | 8 h      | 6 h      |
+| Día 2 — Backend: auth JWT, endpoints CRUD bienes e informes    | 7 h      | 6 h      |
+| Día 3 — Frontend: estructura, rutas, contextos y listado home  | 8 h      | 6 h      |
+| Día 4 — Frontend: detalle de bien, formularios crear/editar    | 8 h      | 6 h      |
+| Día 5 — Estilos y tema, componente CustomSelect, tests, deploy | 6 h      | 6 h      |
+| **Total**                                                      | **37 h** | **30 h** |
+
+**Desviaciones destacadas:**
+
+- Los días 1 al 4 resultaron más ágiles de lo previsto gracias a la familiaridad con el stack, a la reutilización del proyecto anterior y a las decisiones de diseño tomadas desde el inicio.
+- El día 5 se ajustó exactamente al tiempo estimado al acotar el alcance de los estilos y los tests.
 
 ## Estado del proyecto
 
@@ -178,7 +282,7 @@ npm test
 - [x] Rutas protegidas por rol
 - [x] Filtros y paginación
 - [x] Tests (15 tests pasando)
-- [ ] Deploy en producción
+- [x] Deploy en producción (Vercel + Railway)
 
 ## Autora
 
